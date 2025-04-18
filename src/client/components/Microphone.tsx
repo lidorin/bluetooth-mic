@@ -23,7 +23,7 @@ const Microphone: React.FC = () => {
 
   useEffect(() => {
     // Initialize socket connection with auto-reconnect
-    socketRef.current = io('http://localhost:3001', {
+    socketRef.current = io('https://bluetooth-mic.vercel.app', {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
