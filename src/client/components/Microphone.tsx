@@ -7,7 +7,7 @@ const Microphone: React.FC = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string>('');
   const [volume, setVolume] = useState(0);
-  const [isConnected, setIsConnected] = useState(false);
+  const [hasBluetoothDevice, setHasBluetoothDevice] = useState(false);
 
   const socket = io('https://bluetooth-mic-server.onrender.com', {
     reconnectionAttempts: 5,
@@ -16,28 +16,37 @@ const Microphone: React.FC = () => {
   });
 
   useEffect(() => {
-    socket.on('connect', () => {
-      setIsConnected(true);
-      setError('');
-    });
-
-    socket.on('disconnect', () => {
-      setIsConnected(false);
-      setError('נותק מהשרת. מנסה להתחבר מחדש...');
-    });
-
-    socket.on('connect_error', () => {
-      setError('שגיאת התחברות לשרת');
-    });
-
-    return () => {
-      socket.off('connect');
-      socket.off('disconnect');
-      socket.off('connect_error');
+    // Check for Bluetooth device
+    const checkBluetoothDevice = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
+        const hasBluetoothOutput = audioOutputs.some(device => 
+          device.label.toLowerCase().includes('bluetooth') || 
+          device.label.toLowerCase().includes('wireless')
+        );
+        setHasBluetoothDevice(hasBluetoothOutput);
+        if (!hasBluetoothOutput) {
+          setError('No Bluetooth speaker detected. Please connect one to continue.');
+        }
+      } catch (err) {
+        console.error('Error checking audio devices:', err);
+      }
     };
+
+    checkBluetoothDevice();
+    // Check every 5 seconds for new devices
+    const interval = setInterval(checkBluetoothDevice, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const startRecording = async () => {
+    if (!hasBluetoothDevice) {
+      setError('Please connect a Bluetooth speaker first');
+      return;
+    }
+
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setStream(mediaStream);
@@ -69,7 +78,7 @@ const Microphone: React.FC = () => {
       };
       recorder.start(100);
     } catch (err) {
-      setError('לא ניתן לגשת למיקרופון. אנא אשר גישה למיקרופון בדפדפן.');
+      setError('Please allow microphone access in your browser');
       console.error('Error accessing microphone:', err);
     }
   };
@@ -94,24 +103,22 @@ const Microphone: React.FC = () => {
   return (
     <div className="app-container">
       <header className="header">
-        <h1>מיקרופון בלוטות׳</h1>
-        <p>הפוך את הטלפון שלך למיקרופון אלחוטי</p>
+        <h1>Bluetooth Microphone</h1>
+        <p>Turn your phone into a wireless microphone</p>
       </header>
 
       <div className="mic-card">
         <button 
-          className={`mic-button ${isRecording ? 'recording' : ''}`}
+          className={`mic-button ${isRecording ? 'recording' : ''} ${!hasBluetoothDevice ? 'disabled' : ''}`}
           onClick={toggleRecording}
-          disabled={!!error && !isRecording}
+          disabled={!hasBluetoothDevice || (!!error && !isRecording)}
         >
           <i className="material-icons">
             {isRecording ? 'mic' : 'mic_none'}
           </i>
         </button>
 
-        <div className={`status ${isConnected ? 'connected' : error ? 'error' : ''}`}>
-          {error ? error : isConnected ? 'מחובר לשרת' : 'מתחבר לשרת...'}
-        </div>
+        {error && <div className="error-message">{error}</div>}
 
         {isRecording && (
           <div className="volume-meter">

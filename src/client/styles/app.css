@@ -25,45 +25,44 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 2rem;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .header h1 {
   font-size: 2.5rem;
   color: var(--primary-color);
   margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .header p {
   font-size: 1.1rem;
   color: #666;
-  max-width: 600px;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .mic-card {
   background: var(--card-background);
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.mic-card:hover {
-  transform: translateY(-2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .mic-button {
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   border: none;
   background-color: var(--primary-color);
@@ -72,9 +71,20 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 2rem auto;
+  margin: 0 auto 2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.3);
+  position: relative;
+}
+
+.mic-button::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
+  opacity: 0.3;
 }
 
 .mic-button:hover {
@@ -91,22 +101,26 @@ body {
   animation: pulse 2s infinite;
 }
 
+.mic-button.disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.mic-button.disabled:hover {
+  transform: none;
+  background-color: #ccc;
+}
+
 .mic-button i {
-  font-size: 48px;
+  font-size: 64px;
 }
 
-.status {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  color: #666;
-}
-
-.status.connected {
-  color: var(--success-color);
-}
-
-.status.error {
+.error-message {
   color: var(--error-color);
+  margin: 1rem 0;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .volume-meter {
@@ -114,8 +128,8 @@ body {
   height: 8px;
   background-color: #e0e0e0;
   border-radius: 4px;
-  margin-top: 1.5rem;
   overflow: hidden;
+  margin-top: 1rem;
 }
 
 .volume-meter-fill {
@@ -146,11 +160,15 @@ body {
   }
   
   .mic-card {
-    padding: 1.5rem;
+    padding: 2rem;
   }
   
   .mic-button {
-    width: 100px;
-    height: 100px;
+    width: 140px;
+    height: 140px;
+  }
+  
+  .mic-button i {
+    font-size: 56px;
   }
 } 
