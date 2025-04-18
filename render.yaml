@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: bluetooth-mic-server
+    env: node
+    buildCommand: npm install && npm run build:server
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    plan: free 
