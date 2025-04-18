@@ -8,7 +8,7 @@
     "build": "npm run build:server",
     "build:client": "webpack --mode production",
     "build:server": "tsc -p tsconfig.json",
-    "vercel-build": "webpack --mode production",
+    "vercel-build": "npm install && webpack --mode production",
     "dev": "webpack serve --mode development",
     "dev:server": "nodemon --watch src/server --exec ts-node src/server/index.ts",
     "postinstall": "npm run build"
@@ -29,7 +29,8 @@
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
-    "ts-loader": "^9.5.1"
+    "ts-loader": "^9.5.1",
+    "html-webpack-plugin": "^5.5.0"
   },
   "devDependencies": {
     "css-loader": "^6.8.1",
