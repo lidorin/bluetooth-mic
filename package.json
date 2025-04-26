@@ -1,7 +1,7 @@
 {
   "name": "bluetooth-mic",
   "version": "1.0.0",
-  "description": "Web application that turns a smartphone into a Bluetooth microphone",
+  "description": "Web application that turns a smartphone into a wireless microphone",
   "main": "dist/server/index.js",
   "scripts": {
     "start": "node dist/server/index.js",
@@ -13,7 +13,7 @@
     "dev:server": "nodemon --watch src/server --exec ts-node src/server/index.ts",
     "postinstall": "npm run build"
   },
-  "keywords": ["bluetooth", "microphone", "web", "audio"],
+  "keywords": ["microphone", "web", "audio", "wireless"],
   "author": "",
   "license": "ISC",
   "dependencies": {
