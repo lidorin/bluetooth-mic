@@ -7,6 +7,7 @@ const Microphone: React.FC = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string>('');
   const [volume, setVolume] = useState(0);
+  const [isReceiver, setIsReceiver] = useState(false);
 
   const socket = io('https://bluetooth-mic-server.onrender.com', {
     reconnectionAttempts: 5,
@@ -14,11 +15,29 @@ const Microphone: React.FC = () => {
     transports: ['websocket', 'polling']
   });
 
+  useEffect(() => {
+    // Handle incoming audio data
+    socket.on('audio', (data) => {
+      if (isReceiver) {
+        const audioContext = new AudioContext();
+        const audioBlob = new Blob([data], { type: 'audio/webm' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      }
+    });
+
+    return () => {
+      socket.off('audio');
+    };
+  }, [isReceiver]);
+
   const startRecording = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setStream(mediaStream);
       setIsRecording(true);
+      setIsReceiver(false);
       setError('');
 
       const audioContext = new AudioContext();
@@ -68,10 +87,17 @@ const Microphone: React.FC = () => {
     }
   };
 
+  const toggleReceiver = () => {
+    setIsReceiver(!isReceiver);
+    if (isRecording) {
+      stopRecording();
+    }
+  };
+
   return (
     <div className="app-container">
       <header className="header">
-        <h1>Bluetooth Microphone</h1>
+        <h1>Wireless Microphone</h1>
         <p>Turn your phone into a wireless microphone</p>
       </header>
 
@@ -79,10 +105,20 @@ const Microphone: React.FC = () => {
         <button 
           className={`mic-button ${isRecording ? 'recording' : ''}`}
           onClick={toggleRecording}
-          disabled={!!error && !isRecording}
+          disabled={!!error && !isRecording || isReceiver}
         >
           <i className="material-icons">
             {isRecording ? 'mic' : 'mic_none'}
+          </i>
+        </button>
+
+        <button
+          className={`receiver-button ${isReceiver ? 'active' : ''}`}
+          onClick={toggleReceiver}
+          disabled={isRecording}
+        >
+          <i className="material-icons">
+            {isReceiver ? 'volume_up' : 'volume_off'}
           </i>
         </button>
 

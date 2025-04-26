@@ -104,6 +104,40 @@ body {
   font-size: 64px;
 }
 
+.receiver-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.receiver-button:hover {
+  transform: scale(1.05);
+  background-color: #388e3c;
+}
+
+.receiver-button:active {
+  transform: scale(0.95);
+}
+
+.receiver-button.active {
+  background-color: #f44336;
+  animation: pulse 2s infinite;
+}
+
+.receiver-button i {
+  font-size: 32px;
+}
+
 .error-message {
   color: var(--error-color);
   margin: 1rem 0;
@@ -158,5 +192,14 @@ body {
   
   .mic-button i {
     font-size: 56px;
+  }
+
+  .receiver-button {
+    width: 70px;
+    height: 70px;
+  }
+
+  .receiver-button i {
+    font-size: 28px;
   }
 } 
