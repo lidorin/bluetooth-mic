@@ -7,7 +7,6 @@ const Microphone: React.FC = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<string>('');
   const [volume, setVolume] = useState(0);
-  const [hasBluetoothDevice, setHasBluetoothDevice] = useState(false);
 
   const socket = io('https://bluetooth-mic-server.onrender.com', {
     reconnectionAttempts: 5,
@@ -15,38 +14,7 @@ const Microphone: React.FC = () => {
     transports: ['websocket', 'polling']
   });
 
-  useEffect(() => {
-    // Check for Bluetooth device
-    const checkBluetoothDevice = async () => {
-      try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
-        const hasBluetoothOutput = audioOutputs.some(device => 
-          device.label.toLowerCase().includes('bluetooth') || 
-          device.label.toLowerCase().includes('wireless')
-        );
-        setHasBluetoothDevice(hasBluetoothOutput);
-        if (!hasBluetoothOutput) {
-          setError('No Bluetooth speaker detected. Please connect one to continue.');
-        }
-      } catch (err) {
-        console.error('Error checking audio devices:', err);
-      }
-    };
-
-    checkBluetoothDevice();
-    // Check every 5 seconds for new devices
-    const interval = setInterval(checkBluetoothDevice, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const startRecording = async () => {
-    if (!hasBluetoothDevice) {
-      setError('Please connect a Bluetooth speaker first');
-      return;
-    }
-
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setStream(mediaStream);
@@ -109,9 +77,9 @@ const Microphone: React.FC = () => {
 
       <div className="mic-card">
         <button 
-          className={`mic-button ${isRecording ? 'recording' : ''} ${!hasBluetoothDevice ? 'disabled' : ''}`}
+          className={`mic-button ${isRecording ? 'recording' : ''}`}
           onClick={toggleRecording}
-          disabled={!hasBluetoothDevice || (!!error && !isRecording)}
+          disabled={!!error && !isRecording}
         >
           <i className="material-icons">
             {isRecording ? 'mic' : 'mic_none'}

@@ -20,14 +20,9 @@ io.on('connection', (socket) => {
   console.log('Client connected');
 
   // Handle audio data
-  socket.on('audioData', (data) => {
+  socket.on('audio', (data) => {
     // Broadcast audio data to all connected clients except sender
-    socket.broadcast.emit('audioStream', data);
-  });
-
-  // Handle latency measurements
-  socket.on('latencyPing', (data) => {
-    socket.emit('latencyPong', data);
+    socket.broadcast.emit('audio', data);
   });
 
   socket.on('disconnect', () => {
